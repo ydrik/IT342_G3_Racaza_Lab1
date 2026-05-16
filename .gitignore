@@ -3,6 +3,7 @@
 # Document files
 *.pdf
 *.txt
+*.md
 
 # IDE and Editor files
 .vscode/

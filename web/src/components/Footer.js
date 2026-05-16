@@ -6,68 +6,50 @@ const Footer = () => {
 
     return (
         <footer style={styles.footer}>
-            <div style={styles.glow} aria-hidden="true"></div>
-            <div style={styles.container}>
-                <div style={styles.brandColumn}>
-                    <div style={styles.brandTitle}>AnniMemo</div>
-                    <p style={styles.brandTagline}>
-                        A calm, organized home for every pet's health story.
-                    </p>
-                    <div style={styles.badges}>
-                        <span style={styles.badge}>Secure</span>
-                        <span style={styles.badge}>Web + Mobile</span>
-                        <span style={styles.badge}>Pet First</span>
+            <div style={styles.shell}>
+                <div style={styles.mainRow}>
+                    <div style={styles.brandColumn}>
+                        <div style={styles.brandTitle}>AnniMemo</div>
+                        <p style={styles.brandTagline}>
+                            Pet care, minus the chaos. Keep health logs, reminders, and daily routines in one calm place.
+                        </p>
+                        <div style={styles.badges}>
+                            <span style={styles.badge}>Secure</span>
+                            <span style={styles.badge}>Simple</span>
+                            <span style={styles.badge}>Built for Daily Use</span>
+                        </div>
+                    </div>
+
+                    <div style={styles.linksColumn}>
+                        <div style={styles.sectionTitle}>Explore</div>
+                        <Link to="/dashboard" style={styles.link}>Dashboard</Link>
+                        <Link to="/pets" style={styles.link}>My Pets</Link>
+                        <Link to="/reminders" style={styles.link}>Reminders</Link>
+                        <Link to="/facts" style={styles.link}>Pet Facts</Link>
+                    </div>
+
+                    <div style={styles.linksColumn}>
+                        <div style={styles.sectionTitle}>Account</div>
+                        <Link to="/profile" style={styles.link}>Profile</Link>
+                        <Link to="/settings" style={styles.link}>Settings</Link>
+                        <Link to="/support" style={styles.link}>Support</Link>
+                    </div>
+
+                    <div style={styles.linksColumn}>
+                        <div style={styles.sectionTitle}>Contact</div>
+                        <div style={styles.textLine}>Cebu City, Philippines</div>
+                        <div style={styles.textLine}>hello@annimemo.app</div>
+                        <div style={styles.textLine}>Mon-Fri, 9:00-17:00</div>
                     </div>
                 </div>
 
-                <div style={styles.linksColumn}>
-                    <div style={styles.sectionTitle}>Product</div>
-                    <Link to="/dashboard" style={styles.link}>Dashboard</Link>
-                    <Link to="/pets" style={styles.link}>Pet Profiles</Link>
-                    <Link to="/pets/add" style={styles.link}>Add Pet</Link>
-                    <Link to="/profile" style={styles.link}>Profile Settings</Link>
-                </div>
-
-                <div style={styles.linksColumn}>
-                    <div style={styles.sectionTitle}>Resources</div>
-                    <a href="#features" style={styles.link}>Features</a>
-                    <Link to="/support" style={styles.link}>Support</Link>
-                    <a href="#faq" style={styles.link}>FAQ</a>
-                    <a href="#updates" style={styles.link}>Release Notes</a>
-                </div>
-
-                <div style={styles.linksColumn}>
-                    <div style={styles.sectionTitle}>Contact</div>
-                    <div style={styles.textLine}>CIT-U, Cebu City</div>
-                    <div style={styles.textLine}>hello@annimemo.app</div>
-                    <div style={styles.textLine}>+63 900 000 0000</div>
-                    <div style={styles.textLine}>Mon-Fri, 9:00-17:00</div>
-                </div>
-
-                <div style={styles.newsletterColumn}>
-                    <div style={styles.sectionTitle}>Stay in the loop</div>
-                    <p style={styles.newsletterText}>
-                        Get product updates and pet care tips once a month.
-                    </p>
-                    <div style={styles.newsletterRow}>
-                        <input
-                            type="email"
-                            placeholder="Email address"
-                            style={styles.newsletterInput}
-                            aria-label="Email address"
-                        />
-                        <button type="button" style={styles.newsletterButton}>Subscribe</button>
+                <div style={styles.bottomBar}>
+                    <div style={styles.bottomText}>© {year} AnniMemo. All rights reserved.</div>
+                    <div style={styles.bottomLinks}>
+                        <Link to="/privacy" style={styles.bottomLink}>Privacy</Link>
+                        <Link to="/terms" style={styles.bottomLink}>Terms</Link>
+                        <Link to="/cookies" style={styles.bottomLink}>Cookies</Link>
                     </div>
-                    <p style={styles.smallPrint}>No spam. Unsubscribe anytime.</p>
-                </div>
-            </div>
-
-            <div style={styles.bottomBar}>
-                <div style={styles.bottomText}>© {year} AnniMemo. All rights reserved.</div>
-                <div style={styles.bottomLinks}>
-                    <Link to="/privacy" style={styles.bottomLink}>Privacy</Link>
-                    <Link to="/terms" style={styles.bottomLink}>Terms</Link>
-                    <Link to="/cookies" style={styles.bottomLink}>Cookies</Link>
                 </div>
             </div>
         </footer>
@@ -76,55 +58,54 @@ const Footer = () => {
 
 const styles = {
     footer: {
-        position: 'relative',
-        overflow: 'hidden',
         background: 'var(--footer-bg)',
         color: 'white',
-        padding: '60px 20px 28px',
+        padding: '44px 20px 24px',
         fontFamily: '"Space Grotesk", "Segoe UI", sans-serif'
     },
-    glow: {
-        position: 'absolute',
-        top: '-120px',
-        right: '-120px',
-        width: '260px',
-        height: '260px',
-        background: 'radial-gradient(circle, rgba(248, 244, 208, 0.25) 0%, rgba(248, 244, 208, 0) 65%)',
-        pointerEvents: 'none'
-    },
-    container: {
-        maxWidth: '1200px',
+    shell: {
+        maxWidth: '1580px',
         margin: '0 auto',
+        borderRadius: '18px',
+        border: '1px solid rgba(255, 255, 255, 0.14)',
+        background: 'linear-gradient(135deg, rgba(255,255,255,0.07), rgba(255,255,255,0.03))',
+        backdropFilter: 'blur(6px)',
+        padding: '24px 24px 14px'
+    },
+    mainRow: {
         display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
-        gap: '24px'
+        gridTemplateColumns: 'minmax(260px, 1.4fr) repeat(auto-fit, minmax(180px, 1fr))',
+        gap: '22px'
     },
     brandColumn: {
         display: 'flex',
         flexDirection: 'column',
-        gap: '14px'
+        gap: '12px'
     },
     brandTitle: {
         fontFamily: '"Cormorant Garamond", Georgia, serif',
-        fontSize: '30px',
-        letterSpacing: '1px'
+        fontSize: '34px',
+        letterSpacing: '0.5px'
     },
     brandTagline: {
         fontSize: '14px',
         color: 'var(--footer-text)',
-        lineHeight: '1.6'
+        lineHeight: '1.65',
+        maxWidth: '460px',
+        margin: 0
     },
     badges: {
         display: 'flex',
         flexWrap: 'wrap',
-        gap: '8px'
+        gap: '8px',
+        marginTop: '4px'
     },
     badge: {
         fontSize: '12px',
-        padding: '6px 12px',
+        padding: '6px 10px',
         borderRadius: '999px',
-        backgroundColor: 'rgba(255, 255, 255, 0.12)',
-        border: '1px solid rgba(255, 255, 255, 0.15)'
+        backgroundColor: 'rgba(255, 255, 255, 0.1)',
+        border: '1px solid rgba(255, 255, 255, 0.12)'
     },
     linksColumn: {
         display: 'flex',
@@ -132,62 +113,27 @@ const styles = {
         gap: '10px'
     },
     sectionTitle: {
-        fontSize: '14px',
+        fontSize: '12px',
         textTransform: 'uppercase',
-        letterSpacing: '1.5px',
-        color: 'rgba(255, 255, 255, 0.65)',
-        marginBottom: '6px'
+        letterSpacing: '1.4px',
+        color: 'rgba(255, 255, 255, 0.6)',
+        marginBottom: '2px'
     },
     link: {
         color: 'var(--footer-text)',
         textDecoration: 'none',
-        fontSize: '14px'
+        fontSize: '14px',
+        lineHeight: 1.6
     },
     textLine: {
         fontSize: '14px',
-        color: 'var(--footer-text)'
-    },
-    newsletterColumn: {
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '12px'
-    },
-    newsletterText: {
-        fontSize: '14px',
         color: 'var(--footer-text)',
-        lineHeight: '1.6'
-    },
-    newsletterRow: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        gap: '10px'
-    },
-    newsletterInput: {
-        flex: '1 1 160px',
-        padding: '10px 14px',
-        borderRadius: '12px',
-        border: '1px solid rgba(255, 255, 255, 0.2)',
-        backgroundColor: 'rgba(15, 23, 42, 0.5)',
-        color: 'white'
-    },
-    newsletterButton: {
-        padding: '10px 16px',
-        borderRadius: '12px',
-        border: 'none',
-        background: 'linear-gradient(120deg, #f4ce6a 0%, #f3a952 100%)',
-        color: '#1b2a4a',
-        fontWeight: '700',
-        cursor: 'pointer'
-    },
-    smallPrint: {
-        fontSize: '12px',
-        color: 'rgba(255, 255, 255, 0.6)'
+        lineHeight: 1.6
     },
     bottomBar: {
-        maxWidth: '1200px',
-        margin: '30px auto 0',
-        paddingTop: '18px',
-        borderTop: '1px solid rgba(255, 255, 255, 0.15)',
+        marginTop: '20px',
+        paddingTop: '14px',
+        borderTop: '1px solid rgba(255, 255, 255, 0.14)',
         display: 'flex',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
@@ -200,7 +146,8 @@ const styles = {
     },
     bottomLinks: {
         display: 'flex',
-        gap: '16px'
+        gap: '16px',
+        flexWrap: 'wrap'
     },
     bottomLink: {
         color: 'var(--footer-text)',

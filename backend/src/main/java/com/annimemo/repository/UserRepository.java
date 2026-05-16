@@ -9,6 +9,7 @@ import java.util.Optional;
 /**
  * Repository for User entity
  * FRS Feature 1: User Authentication
+ * FRS Feature 4.2: Google OAuth Login
  */
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
@@ -17,5 +18,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Boolean existsByUsername(String username);
 
-    Boolean existsByEmail(String email);
+    Boolean existsByEmailIgnoreCase(String email);
+
+    Optional<User> findByEmailIgnoreCase(String email);
+
+    Optional<User> findByOauthProviderAndOauthId(String oauthProvider, String oauthId);
 }

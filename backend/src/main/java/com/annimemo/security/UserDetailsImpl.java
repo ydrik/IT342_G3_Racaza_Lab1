@@ -3,14 +3,17 @@ package com.annimemo.security;
 import com.annimemo.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * UserDetails implementation for Spring Security
  * Wraps User entity for authentication
+ * FRS Feature 2: Role-Based Access Control
  */
 public class UserDetailsImpl implements UserDetails {
 
@@ -37,6 +40,11 @@ public class UserDetailsImpl implements UserDetails {
     }
 
     public static UserDetailsImpl build(User user) {
+        // Create authorities from user role
+        List<GrantedAuthority> authorities = Collections.singletonList(
+                new SimpleGrantedAuthority(user.getRole().name())
+        );
+
         return new UserDetailsImpl(
                 user.getId(),
                 user.getUsername(),
@@ -44,7 +52,7 @@ public class UserDetailsImpl implements UserDetails {
                 user.getLastName(),
                 user.getEmail(),
                 user.getPassword(),
-                Collections.emptyList()
+                authorities
         );
     }
 

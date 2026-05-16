@@ -2,6 +2,57 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
+const PASSWORD_RULES = [
+    {
+        key: 'length',
+        label: '12 to 100 characters',
+        test: (password) => password.length >= 12 && password.length <= 100
+    },
+    {
+        key: 'uppercase',
+        label: 'At least one uppercase letter',
+        test: (password) => /[A-Z]/.test(password)
+    },
+    {
+        key: 'lowercase',
+        label: 'At least one lowercase letter',
+        test: (password) => /[a-z]/.test(password)
+    },
+    {
+        key: 'number',
+        label: 'At least one number',
+        test: (password) => /\d/.test(password)
+    },
+    {
+        key: 'special',
+        label: 'At least one special character',
+        test: (password) => /[^A-Za-z0-9]/.test(password)
+    },
+    {
+        key: 'noSpaces',
+        label: 'No spaces',
+        test: (password) => !/\s/.test(password)
+    }
+];
+
+const getPasswordStrength = (password) => {
+    const passedRules = PASSWORD_RULES.filter((rule) => rule.test(password)).length;
+
+    if (!password) {
+        return { label: 'Not entered', color: '#718096' };
+    }
+    if (passedRules <= 2) {
+        return { label: 'Weak', color: '#e53e3e' };
+    }
+    if (passedRules <= 4) {
+        return { label: 'Moderate', color: '#dd6b20' };
+    }
+    if (passedRules === 5) {
+        return { label: 'Strong', color: '#2b6cb0' };
+    }
+    return { label: 'Very Strong', color: '#2f855a' };
+};
+
 const RegisterPage = () => {
     const [formData, setFormData] = useState({
         username: '',
@@ -15,6 +66,13 @@ const RegisterPage = () => {
     const [isLoading, setIsLoading] = useState(false);
     const navigate = useNavigate();
 
+    const passwordChecks = PASSWORD_RULES.map((rule) => ({
+        ...rule,
+        passed: rule.test(formData.password)
+    }));
+    const passwordStrength = getPasswordStrength(formData.password);
+    const isPasswordValid = passwordChecks.every((rule) => rule.passed);
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -23,11 +81,25 @@ const RegisterPage = () => {
         e.preventDefault();
         setMessage('');
         setMessageType('');
+
+        if (!isPasswordValid) {
+            setMessage('Password does not meet the required password policy.');
+            setMessageType('error');
+            return;
+        }
+
         setIsLoading(true);
 
+        const payload = {
+            username: formData.username.trim(),
+            password: formData.password,
+            firstName: formData.firstName.trim(),
+            lastName: formData.lastName.trim(),
+            email: formData.email.trim()
+        };
+
         try {
-            // FRS Requirement: POST /api/auth/register
-            const response = await axios.post('http://localhost:8080/api/auth/register', formData);
+            const response = await axios.post('http://localhost:8080/api/auth/register', payload);
             
             if (response.status === 201 || response.status === 200) {
                 // Activity Diagram: 201 Created -> Redirect to Login
@@ -38,8 +110,12 @@ const RegisterPage = () => {
                 }, 1500);
             }
         } catch (err) {
-            // Show error if user already exists or server is down
-            setMessage(err.response?.data?.message || 'Registration failed. Try a different username.');
+            const validationErrors = err.response?.data;
+            if (validationErrors && typeof validationErrors === 'object' && !validationErrors.message) {
+                setMessage(Object.values(validationErrors).join(' '));
+            } else {
+                setMessage(err.response?.data?.message || 'Registration failed. Please review your input and try again.');
+            }
             setMessageType('error');
         } finally {
             setIsLoading(false);
@@ -125,10 +201,27 @@ const RegisterPage = () => {
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
-                                minLength="6"
+                                minLength="12"
                                 style={styles.input}
                             />
-                            <span style={styles.hint}>Minimum 6 characters</span>
+                            <div style={styles.passwordSummary}>
+                                <span style={styles.hint}>Password strength:</span>
+                                <span style={{ ...styles.passwordStrength, color: passwordStrength.color }}>
+                                    {passwordStrength.label}
+                                </span>
+                            </div>
+                            <div style={styles.passwordChecklist}>
+                                {passwordChecks.map((rule) => (
+                                    <div key={rule.key} style={styles.passwordRuleRow}>
+                                        <span style={{ ...styles.passwordRuleIcon, color: rule.passed ? '#2f855a' : '#c53030' }}>
+                                            {rule.passed ? '✓' : '✗'}
+                                        </span>
+                                        <span style={{ ...styles.passwordRuleText, color: rule.passed ? '#2f855a' : 'var(--text-muted)' }}>
+                                            {rule.label}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
 
                         {message && (
@@ -144,11 +237,11 @@ const RegisterPage = () => {
 
                         <button 
                             type="submit" 
-                            disabled={isLoading}
+                            disabled={isLoading || !isPasswordValid}
                             style={{
                                 ...styles.button,
-                                opacity: isLoading ? 0.7 : 1,
-                                cursor: isLoading ? 'not-allowed' : 'pointer'
+                                opacity: isLoading || !isPasswordValid ? 0.7 : 1,
+                                cursor: isLoading || !isPasswordValid ? 'not-allowed' : 'pointer'
                             }}
                         >
                             {isLoading ? 'Creating Account...' : 'Register'}
@@ -271,6 +364,36 @@ const styles = {
         fontSize: '12px',
         color: 'var(--text-muted)',
         marginTop: '4px'
+    },
+    passwordSummary: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '12px'
+    },
+    passwordStrength: {
+        fontSize: '12px',
+        fontWeight: '700'
+    },
+    passwordChecklist: {
+        display: 'grid',
+        gap: '6px',
+        padding: '12px',
+        borderRadius: '12px',
+        backgroundColor: 'rgba(102, 126, 234, 0.08)',
+        border: '1px solid rgba(102, 126, 234, 0.14)'
+    },
+    passwordRuleRow: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px'
+    },
+    passwordRuleIcon: {
+        fontSize: '12px',
+        fontWeight: '700'
+    },
+    passwordRuleText: {
+        fontSize: '12px'
     },
     button: {
         padding: '16px',

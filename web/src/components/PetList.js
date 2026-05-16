@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ActivityService from '../services/activity.service';
@@ -9,6 +9,88 @@ const PetList = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [message, setMessage] = useState('');
     const [messageType, setMessageType] = useState('');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [isSearchFocused, setIsSearchFocused] = useState(false);
+    const [speciesFilter, setSpeciesFilter] = useState('all');
+    const [sortBy, setSortBy] = useState('name-asc');
+
+    const visiblePets = useMemo(() => {
+        const term = searchTerm.trim().toLowerCase();
+        const tokens = term.split(/\s+/).filter(Boolean);
+
+        let nextPets = pets.filter((pet) => {
+            const searchable = [pet.name, pet.species, pet.breed]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+
+            const matchesSearch = tokens.length === 0 || tokens.every((token) => searchable.includes(token));
+
+            const matchesSpecies = speciesFilter === 'all' || (pet.species || '').toLowerCase() === speciesFilter;
+            return matchesSearch && matchesSpecies;
+        });
+
+        nextPets = nextPets.slice().sort((a, b) => {
+            if (sortBy === 'name-asc') {
+                return (a.name || '').localeCompare(b.name || '');
+            }
+            if (sortBy === 'name-desc') {
+                return (b.name || '').localeCompare(a.name || '');
+            }
+            if (sortBy === 'weight-asc') {
+                return Number(a.weight || 0) - Number(b.weight || 0);
+            }
+            if (sortBy === 'weight-desc') {
+                return Number(b.weight || 0) - Number(a.weight || 0);
+            }
+            if (sortBy === 'newest') {
+                return new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime();
+            }
+            return 0;
+        });
+
+        return nextPets;
+    }, [pets, searchTerm, speciesFilter, sortBy]);
+
+    const petSearchSuggestions = useMemo(() => {
+        const term = searchTerm.trim().toLowerCase();
+        if (!term) {
+            return [];
+        }
+
+        const suggestionMap = new Map();
+        pets.forEach((pet) => {
+            const candidates = [
+                { label: pet.name || '', type: 'Pet name' },
+                { label: pet.breed || '', type: 'Breed' },
+                { label: pet.species || '', type: 'Species' }
+            ];
+
+            candidates.forEach((candidate) => {
+                const label = candidate.label.trim();
+                if (!label) {
+                    return;
+                }
+
+                const normalized = label.toLowerCase();
+                if (!normalized.includes(term)) {
+                    return;
+                }
+
+                if (!suggestionMap.has(normalized)) {
+                    suggestionMap.set(normalized, {
+                        label,
+                        type: candidate.type,
+                        score: normalized.startsWith(term) ? 0 : 1
+                    });
+                }
+            });
+        });
+
+        return Array.from(suggestionMap.values())
+            .sort((a, b) => a.score - b.score || a.label.localeCompare(b.label))
+            .slice(0, 8);
+    }, [pets, searchTerm]);
 
     useEffect(() => {
         // Check authentication
@@ -149,6 +231,61 @@ const PetList = () => {
                     </div>
                 )}
 
+                {pets.length > 0 && (
+                    <div style={styles.filterToolbar}>
+                        <div style={styles.searchWrap}>
+                            <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(event) => setSearchTerm(event.target.value)}
+                                onFocus={() => setIsSearchFocused(true)}
+                                onBlur={() => setTimeout(() => setIsSearchFocused(false), 100)}
+                                placeholder="Search by pet name, species, or breed"
+                                style={styles.searchInput}
+                            />
+                            {isSearchFocused && petSearchSuggestions.length > 0 && (
+                                <ul style={styles.suggestionList}>
+                                    {petSearchSuggestions.map((item) => (
+                                        <li
+                                            key={`${item.type}-${item.label}`}
+                                            onMouseDown={() => setSearchTerm(item.label)}
+                                            style={styles.suggestionItem}
+                                        >
+                                            <span>{item.label}</span>
+                                            <small style={styles.suggestionType}>{item.type}</small>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+
+                        <select
+                            value={speciesFilter}
+                            onChange={(event) => setSpeciesFilter(event.target.value)}
+                            style={styles.filterSelect}
+                        >
+                            <option value="all">All species</option>
+                            <option value="dog">Dogs</option>
+                            <option value="cat">Cats</option>
+                            <option value="bird">Birds</option>
+                            <option value="rabbit">Rabbits</option>
+                            <option value="fish">Fish</option>
+                        </select>
+
+                        <select
+                            value={sortBy}
+                            onChange={(event) => setSortBy(event.target.value)}
+                            style={styles.filterSelect}
+                        >
+                            <option value="name-asc">Name (A-Z)</option>
+                            <option value="name-desc">Name (Z-A)</option>
+                            <option value="weight-asc">Weight (Low-High)</option>
+                            <option value="weight-desc">Weight (High-Low)</option>
+                            <option value="newest">Newest Added</option>
+                        </select>
+                    </div>
+                )}
+
                 {pets.length === 0 ? (
                     <div style={styles.emptyState}>
                         <div style={styles.emptyIcon}>🐾</div>
@@ -158,9 +295,15 @@ const PetList = () => {
                             Add Your First Pet
                         </button>
                     </div>
+                ) : visiblePets.length === 0 ? (
+                    <div style={styles.emptyState}>
+                        <div style={styles.emptyIcon}>🔎</div>
+                        <h2 style={styles.emptyTitle}>No matches found</h2>
+                        <p style={styles.emptyText}>Try a different search or filter combination.</p>
+                    </div>
                 ) : (
                     <div style={styles.petGrid}>
-                        {pets.map((pet) => (
+                        {visiblePets.map((pet) => (
                             <div key={pet.id} style={styles.petCard}>
                                 <div style={styles.petHeader}>
                                     <div style={styles.petImageWrap}>
@@ -323,6 +466,67 @@ const styles = {
         fontWeight: '500',
         boxShadow: '0 8px 20px rgba(0,0,0,0.15)',
         animation: 'fadeIn 0.3s ease-in'
+    },
+    filterToolbar: {
+        display: 'grid',
+        gridTemplateColumns: '2fr 1fr 1fr',
+        gap: '12px',
+        marginBottom: '20px'
+    },
+    searchWrap: {
+        position: 'relative'
+    },
+    searchInput: {
+        width: '100%',
+        borderRadius: '12px',
+        border: '1px solid var(--card-border)',
+        background: 'var(--card-bg)',
+        color: 'var(--text-primary)',
+        fontSize: '14px',
+        padding: '12px 14px',
+        outline: 'none'
+    },
+    suggestionList: {
+        position: 'absolute',
+        left: 0,
+        right: 0,
+        top: 'calc(100% + 6px)',
+        margin: 0,
+        padding: '8px',
+        listStyle: 'none',
+        borderRadius: '12px',
+        border: '1px solid var(--card-border)',
+        background: 'var(--card-bg)',
+        boxShadow: '0 10px 24px rgba(0,0,0,0.2)',
+        zIndex: 30,
+        maxHeight: '220px',
+        overflowY: 'auto'
+    },
+    suggestionItem: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '8px 10px',
+        borderRadius: '8px',
+        color: 'var(--text-primary)',
+        cursor: 'pointer'
+    },
+    suggestionType: {
+        color: 'var(--text-muted)',
+        fontSize: '11px',
+        fontWeight: '700',
+        textTransform: 'uppercase'
+    },
+    filterSelect: {
+        width: '100%',
+        borderRadius: '12px',
+        border: '1px solid var(--card-border)',
+        background: 'var(--card-bg)',
+        color: 'var(--text-primary)',
+        fontSize: '14px',
+        padding: '12px 14px',
+        outline: 'none'
     },
     emptyState: {
         backgroundColor: 'var(--card-bg)',
