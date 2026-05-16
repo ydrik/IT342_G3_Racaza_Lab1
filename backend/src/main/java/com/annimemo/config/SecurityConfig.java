@@ -2,6 +2,8 @@ package com.annimemo.config;
 
 import com.annimemo.security.AuthEntryPointJwt;
 import com.annimemo.security.AuthTokenFilter;
+import com.annimemo.security.CustomOAuth2UserService;
+import com.annimemo.security.OAuth2AuthenticationSuccessHandler;
 import com.annimemo.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +30,7 @@ import java.util.List;
  * Security Configuration
  * Configures Spring Security for JWT authentication
  * FRS Feature 1: User Authentication with password hashing and JWT tokens
+ * FRS Feature 4.2: Google OAuth Login
  */
 @Configuration
 @EnableWebSecurity
@@ -38,6 +41,8 @@ public class SecurityConfig {
     private final UserDetailsServiceImpl userDetailsService;
     private final AuthEntryPointJwt unauthorizedHandler;
     private final AuthTokenFilter authTokenFilter;
+    private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
 
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
@@ -63,8 +68,13 @@ public class SecurityConfig {
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> 
-                    auth.requestMatchers("/api/auth/**").permitAll()
+                    auth.requestMatchers("/api/auth/**", "/oauth2/**").permitAll()
                         .anyRequest().authenticated()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                        .userInfoEndpoint(userInfo -> userInfo
+                                .userService(customOAuth2UserService))
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
                 );
 
         http.authenticationProvider(authenticationProvider());

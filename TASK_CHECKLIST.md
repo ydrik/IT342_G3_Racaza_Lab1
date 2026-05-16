@@ -1,7 +1,7 @@
 # AnniMemo - Task Checklist
 
 **Project:** AnniMemo - Pet Health Management System  
-**Version:** 2.0  
+**Version:** 0.6  
 **Last Updated:** February 14, 2026
 
 ---
@@ -154,6 +154,9 @@
 
 ### Phase 6: Advanced Features
 - [ ] **Email Notifications** - Alert users for health metrics
+  - ✅ Implemented: Reminder digest email endpoint (`POST /api/reminders/notify-due-soon`)
+  - ✅ Implemented: Reminder module with due-soon API (`GET /api/reminders/due-soon`)
+  - ✅ Implemented: Web reminders page (`/reminders`) with create/complete flow
   - Send reminders for vaccine dates
   - Notify for upcoming health checkups
   - Daily digest of pet activities
@@ -164,9 +167,62 @@
   - Vaccination certificates generation
 
 - [ ] **Search & Filter** - Pet management enhancements
-  - Search pets by name or type
-  - Filter health metrics by date range
-  - Sort activities by date or type
+  - ✅ Web completed: Search pets by name/species/breed
+  - ✅ Web completed: Filter pets by species and sort by name/weight/newest
+  - ✅ Web completed: Filter health metrics by date range
+  - ✅ Web completed: Sort health records by newest/oldest
+  - Next: Sort activities by date or type
+
+- [x] **Pet Facts Explorer** - Useful educational content
+  - Added protected backend endpoints: `/api/facts/random`, `/api/facts/random-list`
+  - Added web page: `/facts` with species filter (Any/Dog/Cat)
+  - Added dashboard shortcut card for quick access
+
+---
+
+## ⭐ SUGGESTED NEXT PHASE (Impact Features)
+
+### Phase 10: Product Value Enhancements
+- [x] **Reminders & Notifications** - Higher daily engagement
+  - ✅ Vaccine/deworming reminders
+  - ✅ Medication schedule notifications
+  - ✅ In-app + email reminder delivery
+  - ✅ Added reminder filtering (all/due-soon/overdue/completed)
+  - ✅ Added reminder deletion from web reminders board
+
+- [x] **Dashboard Engagement Hooks** - Make users return daily
+  - ✅ Fact of the Day widget (cached daily on dashboard)
+  - ✅ Activity streak card (consecutive active days)
+  - ✅ Care score card with visual progress
+  - ✅ Due-soon reminders summary with quick navigation
+  - ✅ Today's Checklist widget with per-day saved completion
+
+- [x] **Dashboard Navigation & Settings** - Better usability and less dead space
+  - ✅ Added left sidebar navigation and right utility panel on dashboard
+  - ✅ Added Settings page (`/settings`) for user preferences
+  - ✅ Added configurable reminder window and fact source preferences
+  - ✅ Added dashboard compact mode option and cache clearing utility
+
+- [x] **Health Trends Dashboard** - Better health visibility
+  - ✅ Weight trend chart by pet (last 8 entries)
+  - ✅ 30-day metric activity summary (weight/medication/vaccination/vet visits)
+  - ✅ Added dedicated web route: `/health-trends`
+
+- [ ] **Vet Export Pack** - Practical clinic use
+  - Export pet profile and history as PDF
+  - CSV export for vet systems
+  - Shareable visit summary
+
+- [x] **Appointment Tracker** - Better care workflow
+  - ✅ Upcoming vet visit scheduling
+  - ✅ Overdue/completed appointment tracking
+  - ✅ Visit notes and outcomes support
+  - ✅ Added dedicated web route: `/appointments`
+
+- [ ] **Multi-Owner Access** - Shared pet care
+  - Invite family/caretaker accounts
+  - Permission levels (owner/editor/viewer)
+  - Activity attribution per user
 
 ### Phase 7: Performance & Security
 - [ ] **API Rate Limiting** - Prevent abuse

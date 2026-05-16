@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AnniMemo</string>
+    <string name="app_logo">App Logo</string>
+    <string name="user_avatar">User Avatar</string>
+    <string name="pet_image">Pet Image</string>
+
+    <!-- Authentication -->
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="username_hint">Username</string>
+    <string name="password_hint">Password</string>
+    <string name="email_hint">Email</string>
+    <string name="first_name_hint">First Name</string>
+    <string name="last_name_hint">Last Name</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+
+    <!-- Pet Management -->
+    <string name="add_pet">Add Pet</string>
+    <string name="edit_pet">Edit Pet</string>
+    <string name="delete_pet">Delete Pet</string>
+    <string name="pet_name_hint">Pet Name</string>
+    <string name="pet_species_hint">Species (Dog/Cat)</string>
+    <string name="pet_breed_hint">Breed</string>
+    <string name="pet_age_hint">Age</string>
+    <string name="pet_weight_hint">Weight (kg)</string>
+    <string name="pet_color_hint">Color</string>
+
+    <!-- Health Metrics -->
+    <string name="add_health_metric">Add Health Record</string>
+    <string name="metric_type_hint">Metric Type (e.g., Weight, Temperature)</string>
+    <string name="metric_value_hint">Value</string>
+    <string name="metric_unit_hint">Unit (e.g., kg, °C)</string>
+    <string name="metric_notes_hint">Notes (optional)</string>
+
+    <!-- Admin Panel -->
+    <string name="admin_panel">Admin Panel</string>
+    <string name="total_users">Total Users</string>
+    <string name="active_users">Active Users</string>
+
+    <!-- Buttons -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="delete">Delete</string>
+    <string name="logout">Logout</string>
+    <string name="back">Back</string>
+    <string name="profile">Profile</string>
+    <string name="health">Health</string>
+    <string name="edit">Edit</string>
+
+    <!-- Messages -->
+    <string name="loading">Loading...</string>
+    <string name="error_loading_data">Error loading data</string>
+    <string name="error_invalid_input">Invalid input</string>
+    <string name="success">Success</string>
+    <string name="login_success">Login successful</string>
+    <string name="registration_success">Registration successful</string>
+    <string name="no_pets">No pets yet. Add your first pet!</string>
+    <string name="no_health_records">No health records. Add a record to track your pet\'s health</string>
+</resources>

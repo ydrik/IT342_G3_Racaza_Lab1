@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ActivityService from '../services/activity.service';
@@ -37,18 +37,7 @@ const EditPet = () => {
         Other: ['Mixed Breed', 'Unknown', 'Other']
     };
 
-    useEffect(() => {
-        // Check authentication
-        const token = localStorage.getItem('token');
-        if (!token) {
-            navigate('/login');
-            return;
-        }
-
-        fetchPetData();
-    }, [id, navigate]);
-
-    const fetchPetData = async () => {
+    const fetchPetData = useCallback(async () => {
         try {
             // In production: GET /api/pets/{id}
             const token = localStorage.getItem('token');
@@ -79,7 +68,18 @@ const EditPet = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }, [id]);
+
+    useEffect(() => {
+        // Check authentication
+        const token = localStorage.getItem('token');
+        if (!token) {
+            navigate('/login');
+            return;
+        }
+
+        fetchPetData();
+    }, [fetchPetData, navigate]);
 
     const handleChange = (e) => {
         const { name, value } = e.target;

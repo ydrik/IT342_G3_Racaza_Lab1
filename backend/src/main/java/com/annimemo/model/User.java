@@ -14,6 +14,7 @@ import java.util.List;
 /**
  * User Entity
  * FRS Feature 1: User Authentication
+ * FRS Feature 2: Role-Based Access Control
  * Represents a registered user in the system
  */
 @Entity
@@ -41,6 +42,16 @@ public class User {
 
     @Column(unique = true)
     private String email;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role = Role.ROLE_USER; // FRS Feature 2: Role-Based Access Control
+
+    @Column(name = "oauth_provider")
+    private String oauthProvider; // FRS Feature 4.2: Google OAuth (e.g., "google", "local")
+
+    @Column(name = "oauth_id")
+    private String oauthId; // FRS Feature 4.2: OAuth provider user ID
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pet> pets = new ArrayList<>();

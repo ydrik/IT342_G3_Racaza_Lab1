@@ -13,6 +13,9 @@ const HealthMetrics = () => {
     const [healthRecords, setHealthRecords] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [showAddForm, setShowAddForm] = useState(false);
+    const [startDateFilter, setStartDateFilter] = useState('');
+    const [endDateFilter, setEndDateFilter] = useState('');
+    const [sortOrder, setSortOrder] = useState('desc');
 
     // Form data for different health metrics
     const [formData, setFormData] = useState({
@@ -51,6 +54,8 @@ const HealthMetrics = () => {
         }
 
         fetchPetAndHealthData();
+    // Route-level bootstrap for the selected pet page.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [id, navigate]);
 
     const fetchPetAndHealthData = async () => {
@@ -160,6 +165,10 @@ const HealthMetrics = () => {
                     notes: formData.visitNotes
                 };
                 break;
+            default:
+                setMessage('Unsupported health metric type selected.');
+                setMessageType('error');
+                return;
         }
 
         try {
@@ -219,7 +228,45 @@ const HealthMetrics = () => {
     };
 
     const getRecordsByType = (type) => {
-        return healthRecords.filter(record => record.type === type);
+        const records = healthRecords.filter((record) => record.type === type);
+
+        const filtered = records.filter((record) => {
+            if (!record.date) {
+                return false;
+            }
+            const recordDate = new Date(record.date);
+            if (Number.isNaN(recordDate.getTime())) {
+                return false;
+            }
+
+            if (startDateFilter) {
+                const start = new Date(startDateFilter);
+                if (recordDate < start) {
+                    return false;
+                }
+            }
+
+            if (endDateFilter) {
+                const end = new Date(endDateFilter);
+                if (recordDate > end) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        return filtered.sort((a, b) => {
+            const timeA = new Date(a.date).getTime();
+            const timeB = new Date(b.date).getTime();
+            return sortOrder === 'asc' ? timeA - timeB : timeB - timeA;
+        });
+    };
+
+    const clearFilters = () => {
+        setStartDateFilter('');
+        setEndDateFilter('');
+        setSortOrder('desc');
     };
 
     const normalizeMetricType = (type) => {
@@ -632,6 +679,41 @@ const HealthMetrics = () => {
                          'Vet Visit History'}
                     </h3>
 
+                    <div style={styles.filterBar}>
+                        <div style={styles.filterGroup}>
+                            <label style={styles.filterLabel}>From</label>
+                            <input
+                                type="date"
+                                value={startDateFilter}
+                                onChange={(e) => setStartDateFilter(e.target.value)}
+                                style={styles.filterInput}
+                            />
+                        </div>
+                        <div style={styles.filterGroup}>
+                            <label style={styles.filterLabel}>To</label>
+                            <input
+                                type="date"
+                                value={endDateFilter}
+                                onChange={(e) => setEndDateFilter(e.target.value)}
+                                style={styles.filterInput}
+                            />
+                        </div>
+                        <div style={styles.filterGroup}>
+                            <label style={styles.filterLabel}>Sort</label>
+                            <select
+                                value={sortOrder}
+                                onChange={(e) => setSortOrder(e.target.value)}
+                                style={styles.filterInput}
+                            >
+                                <option value="desc">Newest first</option>
+                                <option value="asc">Oldest first</option>
+                            </select>
+                        </div>
+                        <button onClick={clearFilters} style={styles.filterResetButton}>
+                            Reset
+                        </button>
+                    </div>
+
                     {getRecordsByType(activeTab).length === 0 ? (
                         <div style={styles.emptyState}>
                             <p>No {activeTab === 'vetVisit' ? 'vet visit' : activeTab} records yet.</p>
@@ -900,6 +982,39 @@ const styles = {
         marginBottom: '24px',
         paddingBottom: '16px',
         borderBottom: '3px solid #667eea'
+    },
+    filterBar: {
+        display: 'grid',
+        gridTemplateColumns: '1fr 1fr 1fr auto',
+        gap: '12px',
+        marginBottom: '20px',
+        alignItems: 'end'
+    },
+    filterGroup: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: '6px'
+    },
+    filterLabel: {
+        fontSize: '13px',
+        fontWeight: '600',
+        color: '#667085'
+    },
+    filterInput: {
+        padding: '10px 12px',
+        borderRadius: '10px',
+        border: '1px solid #d0d5dd',
+        backgroundColor: '#fff',
+        color: '#1d2939'
+    },
+    filterResetButton: {
+        padding: '10px 14px',
+        borderRadius: '10px',
+        border: 'none',
+        background: 'linear-gradient(135deg, #64748b 0%, #475569 100%)',
+        color: '#fff',
+        fontWeight: '600',
+        cursor: 'pointer'
     },
     emptyState: {
         textAlign: 'center',

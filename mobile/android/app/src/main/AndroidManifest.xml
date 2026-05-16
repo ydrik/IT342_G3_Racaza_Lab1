@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- FRS Feature 4.1: Network permissions for API calls -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- FRS Feature 4.3: File permissions for image upload -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <application
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.AnniMemo">
+
+        <!-- FRS Feature 1: Authentication Activities -->
+        <activity
+            android:name=".ui.auth.LoginActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AnniMemo.NoActionBar">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.auth.RegisterActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AnniMemo.NoActionBar" />
+
+        <!-- FRS Feature 3: Core Business Module - Pet Management -->
+        <activity
+            android:name=".ui.pet.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AnniMemo" />
+
+        <activity
+            android:name=".ui.pet.PetListActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AnniMemo" />
+
+        <activity
+            android:name=".ui.pet.AddPetActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AnniMemo.NoActionBar" />
+
+        <activity
+            android:name=".ui.pet.EditPetActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AnniMemo.NoActionBar" />
+
+        <!-- FRS Feature 3: Health Metrics -->
+        <activity
+            android:name=".ui.health.HealthMetricsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AnniMemo" />
+
+        <activity
+            android:name=".ui.health.AddHealthMetricActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AnniMemo.NoActionBar" />
+
+        <!-- FRS Feature 2: Role-Based Access Control -->
+        <activity
+            android:name=".ui.admin.AdminPanelActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AnniMemo" />
+
+        <!-- FRS Feature 4.1: External API - Breeds -->
+        <activity
+            android:name=".ui.breeds.BreedsActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AnniMemo" />
+
+        <!-- User Profile -->
+        <activity
+            android:name=".ui.profile.UserProfileActivity"
+            android:exported="true"
+            android:theme="@style/Theme.AnniMemo.NoActionBar" />
+
+    </application>
+
+</manifest>

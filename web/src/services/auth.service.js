@@ -1,7 +1,3 @@
-import axios from "axios";
-
-const API_URL = "http://localhost:8080/api/auth/";
-
 // Function to register a user
 const register = (username, email, password) => {
   // TODO: Once Backend is ready, uncomment the axios line below

@@ -45,8 +45,7 @@ public class Pet {
 
     private String color;
 
-    @Lob
-    @Column(columnDefinition = "LONGTEXT")
+    @Column(columnDefinition = "TEXT")
     private String imageUrl; // URL or base64 data for pet image
 
     @Column(length = 1000)

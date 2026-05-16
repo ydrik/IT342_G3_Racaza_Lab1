@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Locale;
+
 /**
  * UserDetailsService implementation
  * Loads user-specific data for Spring Security authentication
@@ -22,8 +24,12 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
+        String normalizedIdentifier = username == null ? "" : username.trim();
+        String normalizedEmail = normalizedIdentifier.toLowerCase(Locale.ROOT);
+
+        User user = userRepository.findByUsername(normalizedIdentifier)
+                .or(() -> userRepository.findByEmailIgnoreCase(normalizedEmail))
+                .orElseThrow(() -> new UsernameNotFoundException("Invalid credentials"));
 
         return UserDetailsImpl.build(user);
     }

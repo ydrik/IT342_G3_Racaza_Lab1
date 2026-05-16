@@ -24,6 +24,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     public UserProfileResponse getProfile(Authentication authentication) {
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -46,8 +47,8 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Check if email is being changed and is already in use
-        if (!user.getEmail().equals(updateRequest.getEmail()) &&
-                userRepository.existsByEmail(updateRequest.getEmail())) {
+        if (!user.getEmail().equalsIgnoreCase(updateRequest.getEmail()) &&
+            userRepository.existsByEmailIgnoreCase(updateRequest.getEmail())) {
             throw new RuntimeException("Email is already in use");
         }
 
@@ -83,5 +84,8 @@ public class UserService {
         user.setUpdatedAt(LocalDateTime.now());
 
         userRepository.save(user);
+
+        // Send password change confirmation email
+        emailService.sendPasswordChangeEmail(user.getEmail(), user.getUsername());
     }
 }
